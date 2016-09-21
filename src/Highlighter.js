@@ -1,11 +1,11 @@
 /* @flow */
 import React, { PropTypes } from 'react'
+import {Text} from 'react-native'
 import * as Chunks from './utils.js'
 
 Highlighter.propTypes = {
   autoEscape: PropTypes.bool,
-  highlightClassName: PropTypes.string,
-  highlightStyle: PropTypes.object,
+  highlightStyle: Text.propTypes.style,
   searchWords: PropTypes.arrayOf(PropTypes.string).isRequired,
   textToHighlight: PropTypes.string.isRequired,
   sanitize: PropTypes.func
@@ -13,12 +13,11 @@ Highlighter.propTypes = {
 
 /**
  * Highlights all occurrences of search terms (searchText) within a string (textToHighlight).
- * This function returns an array of strings and <span>s (wrapping highlighted words).
+ * This function returns an array of strings and <Text>s (wrapping highlighted words).
  */
 export default function Highlighter ({
   autoEscape,
-  highlightClassName = '',
-  highlightStyle = {},
+  highlightStyle,
   searchWords,
   textToHighlight,
   sanitize
@@ -26,26 +25,19 @@ export default function Highlighter ({
   const chunks = Chunks.findAll(textToHighlight, searchWords, sanitize, autoEscape)
 
   return (
-    <span>
+    <Text>
       {chunks.map((chunk, index) => {
         const text = textToHighlight.substr(chunk.start, chunk.end - chunk.start)
 
-        if (chunk.highlight) {
           return (
-            <mark
-              className={highlightClassName}
+            <Text
               key={index}
-              style={highlightStyle}
+              style={chunk.highlight && highlightStyle}
             >
               {text}
-            </mark>
+            </Text>
           )
-        } else {
-          return (
-            <span key={index}>{text}</span>
-          )
-        }
       })}
-    </span>
+    </Text>
   )
 }
